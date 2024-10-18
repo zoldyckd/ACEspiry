@@ -3,64 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ACEspiry - Add Product</title>
-</head>
-<body>
-  <h1>Add Product</h1>
-  <form id="productForm">
-    <label>Barcode Number:</label><br />
-    <input type="text" id="barcode" required /><br /><br />
-
-    <label>Product Name:</label><br />
-    <input type="text" id="productName" required /><br /><br />
-
-    <label>Quantity:</label><br />
-    <input type="number" id="quantity" min="1" required /><br /><br />
-
-    <label>Date Purchased:</label><br />
-    <input type="date" id="purchaseDate" required /><br /><br />
-
-    <label>Best Before:</label><br />
-    <input type="date" id="bestBefore" required /><br /><br />
-
-    <button type="submit">Add Product</button>
-  </form>
-
-  <a href="view-items.html">View Items</a>
-
-  <script>
-    // Function to retrieve items from localStorage
-    function getItems() {
-      return JSON.parse(localStorage.getItem('items')) || [];
+  <title>ACEspiry - Add Item</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    // Function to save items to localStorage
-    function saveItems(items) {
-      localStorage.setItem('items', JSON.stringify(items));
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
     }
 
-    // Function to add a new product
-    document.getElementById('productForm').addEventListener('submit', function (e) {
-      e.preventDefault();
+    h1 {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
 
-      const barcode = document.getElementById('barcode').value;
-      const name = document.getElementById('productName').value;
-      const quantity = document.getElementById('quantity').value;
-      const purchaseDate = document.getElementById('purchaseDate').value;
-      const bestBefore = document.getElementById('bestBefore').value;
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
 
-      const items = getItems();
-
-      // Assign an incremental serial number
-      const serialNumber = items.length + 1;
-
-      // Add the new product to the items array
-      items.push({ serialNumber, barcode, name, quantity, purchaseDate, bestBefore });
-      saveItems(items);
-
-      alert(`Added: ${name}`);
-      document.getElementById('productForm').reset(); // Clear form
-    });
-  </script>
-</body>
-</html>
+    label {
+      display
