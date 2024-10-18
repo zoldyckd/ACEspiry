@@ -4,11 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEspiry - View Items</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .icon-button img {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
 </head>
 <body>
   <h1>Items Added</h1>
 
-  <table border="1" id="itemsTable" style="width:100%; text-align: left;">
+  <table id="itemsTable">
     <thead>
       <tr>
         <th>Product Name</th>
@@ -24,48 +44,39 @@
   <a href="add-item.html">Add More Items</a>
 
   <script>
-    // Function to retrieve items from localStorage
     function getItems() {
       return JSON.parse(localStorage.getItem('items')) || [];
     }
 
-    // Function to save items back to localStorage
     function saveItems(items) {
       localStorage.setItem('items', JSON.stringify(items));
     }
 
-    // Function to render the items in the table
     function renderItems() {
       const items = getItems();
       const tableBody = document.querySelector('#itemsTable tbody');
-      tableBody.innerHTML = ''; // Clear previous table content
+      tableBody.innerHTML = ''; // Clear previous content
 
       items.forEach((item, index) => {
         const row = document.createElement('tr');
-        
+
         const nameCell = document.createElement('td');
         const dateCell = document.createElement('td');
         const actionCell = document.createElement('td');
 
-        // Create input fields for editing
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.value = item.name;
+        nameCell.textContent = item.name;
+        dateCell.textContent = item.expiry;
 
-        const dateInput = document.createElement('input');
-        dateInput.type = 'date';
-        dateInput.value = item.expiry;
-
-        nameCell.appendChild(nameInput);
-        dateCell.appendChild(dateInput);
-
-        // Add Edit and Delete buttons
+        // Pencil Icon for Edit
         const editButton = document.createElement('button');
-        editButton.textContent = 'Save';
-        editButton.onclick = () => editItem(index, nameInput.value, dateInput.value);
+        editButton.classList.add('icon-button');
+        editButton.innerHTML = '<img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">';
+        editButton.onclick = () => enableEditMode(index, row, item);
 
+        // Trash Icon for Delete
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
+        deleteButton.classList.add('icon-button');
+        deleteButton.innerHTML = '<img src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="Delete">';
         deleteButton.onclick = () => deleteItem(index);
 
         actionCell.appendChild(editButton);
@@ -78,8 +89,34 @@
       });
     }
 
-    // Function to edit an item
-    function editItem(index, newName, newExpiry) {
+    function enableEditMode(index, row, item) {
+      const [nameCell, dateCell, actionCell] = row.cells;
+
+      // Create input fields for editing
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = item.name;
+
+      const dateInput = document.createElement('input');
+      dateInput.type = 'date';
+      dateInput.value = item.expiry;
+
+      nameCell.innerHTML = '';
+      dateCell.innerHTML = '';
+      nameCell.appendChild(nameInput);
+      dateCell.appendChild(dateInput);
+
+      // Create Save Button
+      const saveButton = document.createElement('button');
+      saveButton.classList.add('icon-button');
+      saveButton.innerHTML = '<img src="https://img.icons8.com/ios-glyphs/30/save--v1.png" alt="Save">';
+      saveButton.onclick = () => saveEdit(index, nameInput.value, dateInput.value);
+
+      actionCell.innerHTML = '';
+      actionCell.appendChild(saveButton);
+    }
+
+    function saveEdit(index, newName, newExpiry) {
       const items = getItems();
       items[index].name = newName;
       items[index].expiry = newExpiry;
@@ -88,16 +125,14 @@
       renderItems();
     }
 
-    // Function to delete an item
     function deleteItem(index) {
       const items = getItems();
-      items.splice(index, 1); // Remove the item from the array
+      items.splice(index, 1); // Remove the item
       saveItems(items);
       alert('Item deleted!');
       renderItems();
     }
 
-    // Render items on page load
     document.addEventListener('DOMContentLoaded', renderItems);
   </script>
 </body>
