@@ -7,11 +7,13 @@
 </head>
 <body>
   <h1>Items Added</h1>
+
   <table border="1" id="itemsTable" style="width:100%; text-align: left;">
     <thead>
       <tr>
         <th>Product Name</th>
         <th>Expiry Date</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -19,11 +21,17 @@
     </tbody>
   </table>
 
+  <a href="add-item.html">Add More Items</a>
+
   <script>
-    // Function to retrieve items from localStorage or default to an empty array
+    // Function to retrieve items from localStorage
     function getItems() {
-      const items = JSON.parse(localStorage.getItem('items')) || [];
-      return items;
+      return JSON.parse(localStorage.getItem('items')) || [];
+    }
+
+    // Function to save items back to localStorage
+    function saveItems(items) {
+      localStorage.setItem('items', JSON.stringify(items));
     }
 
     // Function to render the items in the table
@@ -32,21 +40,64 @@
       const tableBody = document.querySelector('#itemsTable tbody');
       tableBody.innerHTML = ''; // Clear previous table content
 
-      items.forEach(item => {
+      items.forEach((item, index) => {
         const row = document.createElement('tr');
+        
         const nameCell = document.createElement('td');
         const dateCell = document.createElement('td');
+        const actionCell = document.createElement('td');
 
-        nameCell.textContent = item.name;
-        dateCell.textContent = item.expiry;
+        // Create input fields for editing
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = item.name;
+
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.value = item.expiry;
+
+        nameCell.appendChild(nameInput);
+        dateCell.appendChild(dateInput);
+
+        // Add Edit and Delete buttons
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Save';
+        editButton.onclick = () => editItem(index, nameInput.value, dateInput.value);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.onclick = () => deleteItem(index);
+
+        actionCell.appendChild(editButton);
+        actionCell.appendChild(deleteButton);
 
         row.appendChild(nameCell);
         row.appendChild(dateCell);
+        row.appendChild(actionCell);
         tableBody.appendChild(row);
       });
     }
 
-    // Call renderItems when the page loads
+    // Function to edit an item
+    function editItem(index, newName, newExpiry) {
+      const items = getItems();
+      items[index].name = newName;
+      items[index].expiry = newExpiry;
+      saveItems(items);
+      alert('Item updated!');
+      renderItems();
+    }
+
+    // Function to delete an item
+    function deleteItem(index) {
+      const items = getItems();
+      items.splice(index, 1); // Remove the item from the array
+      saveItems(items);
+      alert('Item deleted!');
+      renderItems();
+    }
+
+    // Render items on page load
     document.addEventListener('DOMContentLoaded', renderItems);
   </script>
 </body>
