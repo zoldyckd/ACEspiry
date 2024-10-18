@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACEspiry - View Items</title>
+</head>
+<body>
+  <h1>Items Added</h1>
+  <table border="1" id="itemsTable" style="width:100%; text-align: left;">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Expiry Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Items will be dynamically added here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Function to retrieve items from localStorage or default to an empty array
+    function getItems() {
+      const items = JSON.parse(localStorage.getItem('items')) || [];
+      return items;
+    }
+
+    // Function to render the items in the table
+    function renderItems() {
+      const items = getItems();
+      const tableBody = document.querySelector('#itemsTable tbody');
+      tableBody.innerHTML = ''; // Clear previous table content
+
+      items.forEach(item => {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const dateCell = document.createElement('td');
+
+        nameCell.textContent = item.name;
+        dateCell.textContent = item.expiry;
+
+        row.appendChild(nameCell);
+        row.appendChild(dateCell);
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Call renderItems when the page loads
+    document.addEventListener('DOMContentLoaded', renderItems);
+  </script>
+</body>
+</html>
