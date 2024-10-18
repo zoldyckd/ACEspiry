@@ -14,15 +14,27 @@
   </form>
 
   <script>
+    // Function to save the item to localStorage
+    function saveItem(name, expiry) {
+      const items = JSON.parse(localStorage.getItem('items')) || [];
+      items.push({ name, expiry });
+      localStorage.setItem('items', JSON.stringify(items));
+    }
+
+    // Handle form submission
     document.getElementById('productForm').addEventListener('submit', function (e) {
       e.preventDefault();
 
       const productName = document.getElementById('productName').value;
       const expiryDate = document.getElementById('expiryDate').value;
 
-      // Send data back to the bot
-      Telegram.WebApp.close(); // Closes the web app
-      Telegram.WebApp.sendData(JSON.stringify({ productName, expiryDate })); // Sends data to the bot
+      saveItem(productName, expiryDate);
+
+      alert(`Added: ${productName} (Expiry: ${expiryDate})`);
+
+      // Optional: Clear the form fields after submission
+      document.getElementById('productName').value = '';
+      document.getElementById('expiryDate').value = '';
     });
   </script>
 </body>
