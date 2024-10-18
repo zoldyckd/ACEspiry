@@ -3,39 +3,115 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ACEspiry - Add Product</title>
+  <title>ACEspiry - View Items</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .icon-button img {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Add Product</h1>
-  <form id="productForm">
-    <input type="text" id="productName" placeholder="Product Name" required /><br /><br />
-    <input type="date" id="expiryDate" required /><br /><br />
-    <button type="submit">Add</button>
-  </form>
+  <h1>Items Added</h1>
+
+  <table id="itemsTable">
+    <thead>
+      <tr>
+        <th>Serial No.</th>
+        <th>Barcode</th>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Date Purchased</th>
+        <th>Best Before</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Items will be dynamically added here -->
+    </tbody>
+  </table>
+
+  <a href="add-item.html">Add More Items</a>
 
   <script>
-    // Function to save the item to localStorage
-    function saveItem(name, expiry) {
-      const items = JSON.parse(localStorage.getItem('items')) || [];
-      items.push({ name, expiry });
+    function getItems() {
+      return JSON.parse(localStorage.getItem('items')) || [];
+    }
+
+    function saveItems(items) {
       localStorage.setItem('items', JSON.stringify(items));
     }
 
-    // Handle form submission
-    document.getElementById('productForm').addEventListener('submit', function (e) {
-      e.preventDefault();
+    function renderItems() {
+      const items = getItems();
+      const tableBody = document.querySelector('#itemsTable tbody');
+      tableBody.innerHTML = ''; // Clear previous content
 
-      const productName = document.getElementById('productName').value;
-      const expiryDate = document.getElementById('expiryDate').value;
+      items.forEach((item, index) => {
+        const row = document.createElement('tr');
 
-      saveItem(productName, expiryDate);
+        row.innerHTML = `
+          <td>${item.serialNumber}</td>
+          <td>${item.barcode}</td>
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${item.purchaseDate}</td>
+          <td>${item.bestBefore}</td>
+          <td>
+            <button class="icon-button" onclick="editItem(${index})">
+              <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
+            </button>
+            <button class="icon-button" onclick="deleteItem(${index})">
+              <img src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="Delete">
+            </button>
+          </td>
+        `;
 
-      alert(`Added: ${productName} (Expiry: ${expiryDate})`);
+        tableBody.appendChild(row);
+      });
+    }
 
-      // Optional: Clear the form fields after submission
-      document.getElementById('productName').value = '';
-      document.getElementById('expiryDate').value = '';
-    });
+    function editItem(index) {
+      const items = getItems();
+      const item = items[index];
+
+      const newName = prompt('Enter new product name:', item.name);
+      const newQuantity = prompt('Enter new quantity:', item.quantity);
+      const newBestBefore = prompt('Enter new best before date:', item.bestBefore);
+
+      if (newName && newQuantity && newBestBefore) {
+        item.name = newName;
+        item.quantity = newQuantity;
+        item.bestBefore = newBestBefore;
+        saveItems(items);
+        alert('Item updated!');
+        renderItems();
+      }
+    }
+
+    function deleteItem(index) {
+      const items = getItems();
+      items.splice(index, 1);
+      saveItems(items);
+      alert('Item deleted!');
+      renderItems();
+    }
+
+    document.addEventListener('DOMContentLoaded', renderItems);
   </script>
 </body>
 </html>
