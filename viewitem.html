@@ -5,109 +5,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEspiry - View Items</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      flex: 1;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      color: #333;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
     th, td {
-      padding: 10px;
-      text-align: left;
+      padding: 12px;
       border-bottom: 1px solid #ddd;
+      text-align: left;
     }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
     .icon-button {
       background: none;
       border: none;
       cursor: pointer;
     }
+
     .icon-button img {
       width: 20px;
       height: 20px;
     }
+
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #007bff;
+      font-size: 1rem;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <h1>Items Added</h1>
 
-  <table id="itemsTable">
-    <thead>
-      <tr>
-        <th>Serial No.</th>
-        <th>Barcode</th>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Date Purchased</th>
-        <th>Best Before</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Items will be dynamically added here -->
-    </tbody>
-  </table>
+  <div class="container">
+    <h1>Items Added</h1>
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th>Serial No.</th>
+          <th>Barcode</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Date Purchased</th>
+          <th>Best Before</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <a href="add-item.html">Add More Items</a>
+  </div>
 
-  <a href="add-item.html">Add More Items</a>
+  <footer>
+    Copyright © 2024, Joyce D.
+  </footer>
 
   <script>
-    function getItems() {
-      return JSON.parse(localStorage.getItem('items')) || [];
-    }
-
-    function saveItems(items) {
-      localStorage.setItem('items', JSON.stringify(items));
-    }
-
     function renderItems() {
-      const items = getItems();
-      const tableBody = document.querySelector('#itemsTable tbody');
-      tableBody.innerHTML = ''; // Clear previous content
+      const items = JSON.parse(localStorage.getItem('items')) || [];
+      const tbody = document.querySelector('#itemsTable tbody');
+      tbody.innerHTML = '';
 
       items.forEach((item, index) => {
         const row = document.createElement('tr');
-
         row.innerHTML = `
           <td>${item.serialNumber}</td>
           <td>${item.barcode}</td>
-          <td>${item.name}</td>
+          <td>${item.productName}</td>
           <td>${item.quantity}</td>
           <td>${item.purchaseDate}</td>
           <td>${item.bestBefore}</td>
           <td>
-            <button class="icon-button" onclick="editItem(${index})">
-              <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
-            </button>
             <button class="icon-button" onclick="deleteItem(${index})">
               <img src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="Delete">
             </button>
           </td>
         `;
-
-        tableBody.appendChild(row);
+        tbody.appendChild(row);
       });
     }
 
-    function editItem(index) {
-      const items = getItems();
-      const item = items[index];
-
-      const newName = prompt('Enter new product name:', item.name);
-      const newQuantity = prompt('Enter new quantity:', item.quantity);
-      const newBestBefore = prompt('Enter new best before date:', item.bestBefore);
-
-      if (newName && newQuantity && newBestBefore) {
-        item.name = newName;
-        item.quantity = newQuantity;
-        item.bestBefore = newBestBefore;
-        saveItems(items);
-        alert('Item updated!');
-        renderItems();
-      }
-    }
-
     function deleteItem(index) {
-      const items = getItems();
+      const items = JSON.parse(localStorage.getItem('items')) || [];
       items.splice(index, 1);
-      saveItems(items);
-      alert('Item deleted!');
+      localStorage.setItem('items', JSON.stringify(items));
       renderItems();
     }
 
