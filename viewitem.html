@@ -31,8 +31,12 @@
   <table id="itemsTable">
     <thead>
       <tr>
+        <th>Serial No.</th>
+        <th>Barcode</th>
         <th>Product Name</th>
-        <th>Expiry Date</th>
+        <th>Quantity</th>
+        <th>Date Purchased</th>
+        <th>Best Before</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -60,74 +64,48 @@
       items.forEach((item, index) => {
         const row = document.createElement('tr');
 
-        const nameCell = document.createElement('td');
-        const dateCell = document.createElement('td');
-        const actionCell = document.createElement('td');
+        row.innerHTML = `
+          <td>${item.serialNumber}</td>
+          <td>${item.barcode}</td>
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${item.purchaseDate}</td>
+          <td>${item.bestBefore}</td>
+          <td>
+            <button class="icon-button" onclick="editItem(${index})">
+              <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
+            </button>
+            <button class="icon-button" onclick="deleteItem(${index})">
+              <img src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="Delete">
+            </button>
+          </td>
+        `;
 
-        nameCell.textContent = item.name;
-        dateCell.textContent = item.expiry;
-
-        // Pencil Icon for Edit
-        const editButton = document.createElement('button');
-        editButton.classList.add('icon-button');
-        editButton.innerHTML = '<img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">';
-        editButton.onclick = () => enableEditMode(index, row, item);
-
-        // Trash Icon for Delete
-        const deleteButton = document.createElement('button');
-        deleteButton.classList.add('icon-button');
-        deleteButton.innerHTML = '<img src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="Delete">';
-        deleteButton.onclick = () => deleteItem(index);
-
-        actionCell.appendChild(editButton);
-        actionCell.appendChild(deleteButton);
-
-        row.appendChild(nameCell);
-        row.appendChild(dateCell);
-        row.appendChild(actionCell);
         tableBody.appendChild(row);
       });
     }
 
-    function enableEditMode(index, row, item) {
-      const [nameCell, dateCell, actionCell] = row.cells;
-
-      // Create input fields for editing
-      const nameInput = document.createElement('input');
-      nameInput.type = 'text';
-      nameInput.value = item.name;
-
-      const dateInput = document.createElement('input');
-      dateInput.type = 'date';
-      dateInput.value = item.expiry;
-
-      nameCell.innerHTML = '';
-      dateCell.innerHTML = '';
-      nameCell.appendChild(nameInput);
-      dateCell.appendChild(dateInput);
-
-      // Create Save Button
-      const saveButton = document.createElement('button');
-      saveButton.classList.add('icon-button');
-      saveButton.innerHTML = '<img src="https://img.icons8.com/ios-glyphs/30/save--v1.png" alt="Save">';
-      saveButton.onclick = () => saveEdit(index, nameInput.value, dateInput.value);
-
-      actionCell.innerHTML = '';
-      actionCell.appendChild(saveButton);
-    }
-
-    function saveEdit(index, newName, newExpiry) {
+    function editItem(index) {
       const items = getItems();
-      items[index].name = newName;
-      items[index].expiry = newExpiry;
-      saveItems(items);
-      alert('Item updated!');
-      renderItems();
+      const item = items[index];
+
+      const newName = prompt('Enter new product name:', item.name);
+      const newQuantity = prompt('Enter new quantity:', item.quantity);
+      const newBestBefore = prompt('Enter new best before date:', item.bestBefore);
+
+      if (newName && newQuantity && newBestBefore) {
+        item.name = newName;
+        item.quantity = newQuantity;
+        item.bestBefore = newBestBefore;
+        saveItems(items);
+        alert('Item updated!');
+        renderItems();
+      }
     }
 
     function deleteItem(index) {
       const items = getItems();
-      items.splice(index, 1); // Remove the item
+      items.splice(index, 1);
       saveItems(items);
       alert('Item deleted!');
       renderItems();
