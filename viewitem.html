@@ -94,7 +94,7 @@
       </thead>
       <tbody></tbody>
     </table>
-    <a href="additem.html">Add More Items</a>
+    <a href="add-item.html">Add More Items</a>
   </div>
 
   <footer>
@@ -102,13 +102,25 @@
   </footer>
 
   <script>
+    // Retrieve items from localStorage or initialize with an empty array
+    function getItems() {
+      return JSON.parse(localStorage.getItem('items')) || [];
+    }
+
+    // Save items to localStorage
+    function saveItems(items) {
+      localStorage.setItem('items', JSON.stringify(items));
+    }
+
+    // Render the items in the table
     function renderItems() {
-      const items = JSON.parse(localStorage.getItem('items')) || [];
+      const items = getItems();
       const tbody = document.querySelector('#itemsTable tbody');
-      tbody.innerHTML = '';
+      tbody.innerHTML = ''; // Clear existing rows
 
       items.forEach((item, index) => {
         const row = document.createElement('tr');
+
         row.innerHTML = `
           <td>${item.serialNumber}</td>
           <td>${item.barcode}</td>
@@ -117,7 +129,10 @@
           <td>${item.purchaseDate}</td>
           <td>${item.bestBefore}</td>
           <td>
-            <button class="icon-button" onclick="deleteItem(${index})">
+            <button class="icon-button" onclick="editItem(${index})">
+              <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
+            </button>
+            <button class="icon-button" onclick="confirmDelete(${index})">
               <img src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="Delete">
             </button>
           </td>
@@ -126,13 +141,46 @@
       });
     }
 
+    // Edit an existing item
+    function editItem(index) {
+      const items = getItems();
+      const item = items[index];
+
+      const newName = prompt('Enter new product name:', item.productName);
+      const newQuantity = prompt('Enter new quantity:', item.quantity);
+      const newBestBefore = prompt('Enter new best before date:', item.bestBefore);
+
+      if (newName && newQuantity && newBestBefore) {
+        const confirmSave = confirm('Do you want to save the changes?');
+        if (confirmSave) {
+          item.productName = newName;
+          item.quantity = newQuantity;
+          item.bestBefore = newBestBefore;
+          saveItems(items);
+          alert('Item updated!');
+          renderItems();
+        }
+      }
+    }
+
+    // Confirm before deleting an item
+    function confirmDelete(index) {
+      const confirmDeletion = confirm('Are you sure you want to delete this item?');
+      if (confirmDeletion) {
+        deleteItem(index);
+      }
+    }
+
+    // Delete an item
     function deleteItem(index) {
-      const items = JSON.parse(localStorage.getItem('items')) || [];
-      items.splice(index, 1);
-      localStorage.setItem('items', JSON.stringify(items));
+      const items = getItems();
+      items.splice(index, 1); // Remove the item
+      saveItems(items);
+      alert('Item deleted!');
       renderItems();
     }
 
+    // Render items when the page loads
     document.addEventListener('DOMContentLoaded', renderItems);
   </script>
 </body>
