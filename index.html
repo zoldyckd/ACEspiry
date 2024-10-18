@@ -4,14 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEspiry - Home</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Center content */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Header Styles */
+    h1 {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    /* Button Styles */
+    .button {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      text-decoration: none;
+      color: #fff;
+      background-color: #007bff;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Footer Styles */
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to ACEspiry</h1>
-  <p>Manage your product expiry dates with ease!</p>
 
-  <div style="margin-top: 20px;">
-    <a href="additem.html" style="display: block; margin: 10px 0; font-size: 20px;">➕ Add Item</a>
-    <a href="viewitem.html" style="display: block; margin: 10px 0; font-size: 20px;">📋 View Items</a>
+  <div class="container">
+    <h1>Welcome to ACEspiry</h1>
+    <p>Manage your product expiry dates with ease!</p>
+
+    <a href="add-item.html" class="button">➕ Add Item</a>
+    <a href="view-items.html" class="button">📋 View Items</a>
   </div>
+
+  <footer>
+    Copyright © 2024, Joyce D.
+  </footer>
+
 </body>
 </html>
