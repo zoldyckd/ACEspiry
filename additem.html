@@ -3,115 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ACEspiry - View Items</title>
-  <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    .icon-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-    .icon-button img {
-      width: 20px;
-      height: 20px;
-    }
-  </style>
+  <title>ACEspiry - Add Product</title>
 </head>
 <body>
-  <h1>Items Added</h1>
+  <h1>Add Product</h1>
+  <form id="productForm">
+    <label>Barcode Number:</label><br />
+    <input type="text" id="barcode" required /><br /><br />
 
-  <table id="itemsTable">
-    <thead>
-      <tr>
-        <th>Serial No.</th>
-        <th>Barcode</th>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Date Purchased</th>
-        <th>Best Before</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Items will be dynamically added here -->
-    </tbody>
-  </table>
+    <label>Product Name:</label><br />
+    <input type="text" id="productName" required /><br /><br />
 
-  <a href="add-item.html">Add More Items</a>
+    <label>Quantity:</label><br />
+    <input type="number" id="quantity" min="1" required /><br /><br />
+
+    <label>Date Purchased:</label><br />
+    <input type="date" id="purchaseDate" required /><br /><br />
+
+    <label>Best Before:</label><br />
+    <input type="date" id="bestBefore" required /><br /><br />
+
+    <button type="submit">Add Product</button>
+  </form>
+
+  <a href="view-items.html">View Items</a>
 
   <script>
+    // Function to retrieve items from localStorage
     function getItems() {
       return JSON.parse(localStorage.getItem('items')) || [];
     }
 
+    // Function to save items to localStorage
     function saveItems(items) {
       localStorage.setItem('items', JSON.stringify(items));
     }
 
-    function renderItems() {
+    // Function to add a new product
+    document.getElementById('productForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const barcode = document.getElementById('barcode').value;
+      const name = document.getElementById('productName').value;
+      const quantity = document.getElementById('quantity').value;
+      const purchaseDate = document.getElementById('purchaseDate').value;
+      const bestBefore = document.getElementById('bestBefore').value;
+
       const items = getItems();
-      const tableBody = document.querySelector('#itemsTable tbody');
-      tableBody.innerHTML = ''; // Clear previous content
 
-      items.forEach((item, index) => {
-        const row = document.createElement('tr');
+      // Assign an incremental serial number
+      const serialNumber = items.length + 1;
 
-        row.innerHTML = `
-          <td>${item.serialNumber}</td>
-          <td>${item.barcode}</td>
-          <td>${item.name}</td>
-          <td>${item.quantity}</td>
-          <td>${item.purchaseDate}</td>
-          <td>${item.bestBefore}</td>
-          <td>
-            <button class="icon-button" onclick="editItem(${index})">
-              <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
-            </button>
-            <button class="icon-button" onclick="deleteItem(${index})">
-              <img src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="Delete">
-            </button>
-          </td>
-        `;
-
-        tableBody.appendChild(row);
-      });
-    }
-
-    function editItem(index) {
-      const items = getItems();
-      const item = items[index];
-
-      const newName = prompt('Enter new product name:', item.name);
-      const newQuantity = prompt('Enter new quantity:', item.quantity);
-      const newBestBefore = prompt('Enter new best before date:', item.bestBefore);
-
-      if (newName && newQuantity && newBestBefore) {
-        item.name = newName;
-        item.quantity = newQuantity;
-        item.bestBefore = newBestBefore;
-        saveItems(items);
-        alert('Item updated!');
-        renderItems();
-      }
-    }
-
-    function deleteItem(index) {
-      const items = getItems();
-      items.splice(index, 1);
+      // Add the new product to the items array
+      items.push({ serialNumber, barcode, name, quantity, purchaseDate, bestBefore });
       saveItems(items);
-      alert('Item deleted!');
-      renderItems();
-    }
 
-    document.addEventListener('DOMContentLoaded', renderItems);
+      alert(`Added: ${name}`);
+      document.getElementById('productForm').reset(); // Clear form
+    });
   </script>
 </body>
 </html>
