@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEspiry - Add Product</title>
   <style>
-    /* Reset styles */
     * {
       margin: 0;
       padding: 0;
@@ -14,7 +13,7 @@
 
     html, body {
       height: 100%;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background-color: #f0f4f8;
     }
 
@@ -36,9 +35,9 @@
 
     h1 {
       text-align: center;
-      font-size: 2rem;
-      color: #333;
+      font-size: 2.5rem;
       margin-bottom: 20px;
+      color: #333;
     }
 
     form {
@@ -52,12 +51,12 @@
       color: #555;
     }
 
-    input {
+    input, select, textarea {
+      width: 100%;
       padding: 12px;
       font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 8px;
-      width: 100%;
     }
 
     button {
@@ -75,28 +74,9 @@
       background-color: #0056b3;
     }
 
-    a {
-      text-align: center;
-      display: block;
-      margin-top: 15px;
-      text-decoration: none;
-      color: #007bff;
-      font-size: 1rem;
-    }
-
-    .error-message {
-      color: red;
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 480px) {
-      .form-container {
-        padding: 20px;
-      }
-
+    @media (max-width: 600px) {
       h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
       }
 
       button {
@@ -111,11 +91,19 @@
     <div class="form-container">
       <h1>Add Product</h1>
       <form id="productForm">
-        <label for="barcode">Barcode Number</label>
-        <input type="text" id="barcode" required>
-
         <label for="productName">Product Name</label>
         <input type="text" id="productName" required>
+
+        <label for="category">Category</label>
+        <select id="category" required>
+          <option value="">Select Category</option>
+          <option value="Food">Food</option>
+          <option value="Cosmetics">Cosmetics</option>
+          <option value="Medicine">Medicine</option>
+          <option value="Vouchers">Vouchers</option>
+          <option value="Gift Cards">Gift Cards</option>
+          <option value="Tickets">Tickets</option>
+        </select>
 
         <label for="quantity">Quantity</label>
         <input type="number" id="quantity" min="1" required>
@@ -126,42 +114,36 @@
         <label for="bestBefore">Best Before</label>
         <input type="date" id="bestBefore" required>
 
+        <label for="tags">Tags (comma-separated)</label>
+        <input type="text" id="tags" placeholder="e.g., Organic, Frozen">
+
+        <label for="notes">Notes</label>
+        <textarea id="notes" rows="3" placeholder="Optional notes..."></textarea>
+
         <button type="submit">Add Product</button>
       </form>
-
-      <a href="viewitem.html">View Items</a>
-
-      <div class="error-message" id="errorMessage"></div>
     </div>
   </div>
 
   <script>
-    // Handle form submission
     document.getElementById('productForm').addEventListener('submit', function (e) {
       e.preventDefault();
 
-      const barcode = document.getElementById('barcode').value;
       const productName = document.getElementById('productName').value;
+      const category = document.getElementById('category').value;
       const quantity = document.getElementById('quantity').value;
       const purchaseDate = document.getElementById('purchaseDate').value;
       const bestBefore = document.getElementById('bestBefore').value;
-      const errorMessage = document.getElementById('errorMessage');
+      const tags = document.getElementById('tags').value;
+      const notes = document.getElementById('notes').value;
+      const dateCreated = new Date().toISOString().split('T')[0]; // Auto-generate Date Created
 
-      // Validate that the 'Best Before' date is after the 'Date Purchased'
-      if (new Date(bestBefore) <= new Date(purchaseDate)) {
-        errorMessage.textContent = "Error: 'Best Before' date must be after 'Date Purchased'.";
-        return;
-      }
-
-      // If validation passes, save the item
-      errorMessage.textContent = ""; // Clear previous error message
       const items = JSON.parse(localStorage.getItem('items')) || [];
-      const serialNumber = items.length + 1;
-
-      items.push({ serialNumber, barcode, productName, quantity, purchaseDate, bestBefore });
+      items.push({ productName, category, quantity, purchaseDate, bestBefore, tags, notes, dateCreated });
       localStorage.setItem('items', JSON.stringify(items));
-      alert(`Added: ${productName}`);
-      e.target.reset();
+
+      alert('Product added successfully!');
+      e.target.reset(); // Clear form fields
     });
   </script>
 
