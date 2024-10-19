@@ -78,40 +78,6 @@
       font-size: 1rem;
     }
 
-    .form-container {
-      display: none;
-      margin-top: 20px;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-container input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    .form-container button {
-      width: 100%;
-      padding: 15px;
-      font-size: 1.1rem;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .form-container button:hover {
-      background-color: #218838;
-    }
-
     /* Responsive Styles */
     @media (max-width: 600px) {
       th, td {
@@ -133,12 +99,12 @@
       <table id="itemsTable">
         <thead>
           <tr>
-            <th>Serial No.</th>
             <th>Barcode</th>
             <th>Product Name</th>
             <th>Quantity</th>
             <th>Date Purchased</th>
             <th>Best Before</th>
+            <th>Date Created</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -147,45 +113,36 @@
         </tbody>
       </table>
 
-      <div class="form-container" id="editForm">
-        <h2>Edit Product</h2>
-        <input type="text" id="editBarcode" placeholder="Barcode Number" required>
-        <input type="text" id="editProductName" placeholder="Product Name" required>
-        <input type="number" id="editQuantity" placeholder="Quantity" min="1" required>
-        <input type="date" id="editPurchaseDate" required>
-        <input type="date" id="editBestBefore" required>
-        <button id="saveChangesButton">Save Changes</button>
-      </div>
-
-      <a href="additem.html">Add More Items</a>
+      <a href="add-item.html">Add More Items</a>
     </div>
   </div>
 
   <script>
-    let editingIndex = null; // Track which item is being edited
-
+    // Retrieve items from localStorage
     function getItems() {
       return JSON.parse(localStorage.getItem('items')) || [];
     }
 
+    // Save items to localStorage
     function saveItems(items) {
       localStorage.setItem('items', JSON.stringify(items));
     }
 
+    // Render items in the table, sorted by Date Created (earliest to latest)
     function renderItems() {
-      const items = getItems();
+      const items = getItems().sort((a, b) => new Date(a.dateCreated) - new Date(b.dateCreated));
       const tbody = document.querySelector('#itemsTable tbody');
       tbody.innerHTML = ''; // Clear previous rows
 
       items.forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${item.serialNumber}</td>
           <td>${item.barcode}</td>
           <td>${item.productName}</td>
           <td>${item.quantity}</td>
           <td>${item.purchaseDate}</td>
           <td>${item.bestBefore}</td>
+          <td>${item.dateCreated}</td>
           <td>
             <button class="icon-button" onclick="editItem(${index})">
               <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
@@ -199,53 +156,65 @@
       });
     }
 
+    // Edit an item
     function editItem(index) {
       const items = getItems();
       const item = items[index];
 
-      // Populate the form with the item's data
-      document.getElementById('editBarcode').value = item.barcode;
-      document.getElementById('editProductName').value = item.productName;
-      document.getElementById('editQuantity').value = item.quantity;
-      document.getElementById('editPurchaseDate').value = item.purchaseDate;
-      document.getElementById('editBestBefore').value = item.bestBefore;
+      const newBarcode = prompt('Enter new barcode:', item.barcode);
+      const newName = prompt('Enter new product name:', item.productName);
+      const newQuantity = prompt('Enter new quantity:', item.quantity);
+      const newBestBefore = prompt('Enter new best before date:', item.bestBefore);
 
-      editingIndex = index; // Track the item being edited
-      document.getElementById('editForm').style.display = 'block';
+      if (newBarcode && newName && newQuantity && newBestBefore) {
+        const confirmSave = confirm('Do you want to save the changes?');
+        if (confirmSave) {
+          item.barcode = newBarcode;
+          item.productName = newName;
+          item.quantity = newQuantity;
+          item.bestBefore = newBestBefore;
+          saveItems(items);
+          alert('Item updated!');
+          renderItems();
+        }
+      }
     }
 
-    document.getElementById('saveChangesButton').addEventListener('click', () => {
-      const items = getItems();
-      const item = items[editingIndex];
-
-      // Update the item's data
-      item.barcode = document.getElementById('editBarcode').value;
-      item.productName = document.getElementById('editProductName').value;
-      item.quantity = document.getElementById('editQuantity').value;
-      item.purchaseDate = document.getElementById('editPurchaseDate').value;
-      item.bestBefore = document.getElementById('editBestBefore').value;
-
-      saveItems(items);
-      alert('Item updated!');
-      document.getElementById('editForm').style.display = 'none'; // Hide the form
-      renderItems();
-    });
-
+    // Confirm deletion
     function confirmDelete(index) {
       if (confirm('Are you sure you want to delete this item?')) {
         deleteItem(index);
       }
     }
 
+    // Delete an item
     function deleteItem(index) {
       const items = getItems();
-      items.splice(index, 1);
+      items.splice(index, 1); // Remove the item
       saveItems(items);
       alert('Item deleted!');
       renderItems();
     }
 
-    document.addEventListener('DOMContentLoaded', renderItems);
+    // Add dateCreated to newly added items if missing (for backwards compatibility)
+    function ensureDateCreated() {
+      const items = getItems();
+      let updated = false;
+
+      items.forEach(item => {
+        if (!item.dateCreated) {
+          item.dateCreated = new Date().toISOString().split('T')[0]; // Add dateCreated if missing
+          updated = true;
+        }
+      });
+
+      if (updated) saveItems(items);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ensureDateCreated(); // Ensure all items have a dateCreated field
+      renderItems(); // Render the items on page load
+    });
   </script>
 
 </body>
