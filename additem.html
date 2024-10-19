@@ -135,9 +135,6 @@
         <label for="bestBefore">Best Before</label>
         <input type="date" id="bestBefore" required>
 
-        <label for="tags">Tags (comma-separated)</label>
-        <input type="text" id="tags" placeholder="e.g., Organic, Frozen">
-
         <label for="notes">Notes</label>
         <textarea id="notes" rows="3" placeholder="Optional notes..."></textarea>
 
@@ -161,7 +158,6 @@
       const quantity = document.getElementById('quantity').value;
       const purchaseDate = document.getElementById('purchaseDate').value;
       const bestBefore = document.getElementById('bestBefore').value;
-      const tags = document.getElementById('tags').value;
       const notes = document.getElementById('notes').value;
       const dateCreated = new Date().toISOString().split('T')[0]; // Auto-generate Date Created
 
@@ -174,7 +170,7 @@
       }
 
       const items = JSON.parse(localStorage.getItem('items')) || [];
-      items.push({ productName, category, quantity, purchaseDate, bestBefore, tags, notes, dateCreated });
+      items.push({ productName, category, quantity, purchaseDate, bestBefore, notes, dateCreated });
       localStorage.setItem('items', JSON.stringify(items));
 
       alert('Product added successfully!');
