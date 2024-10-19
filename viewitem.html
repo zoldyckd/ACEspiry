@@ -5,33 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEspiry - View Items</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f4f8;
+    /* Reset Styles */
+    * {
       margin: 0;
       padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      box-sizing: border-box;
     }
 
-    .container {
-      flex: 1;
+    html, body {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+    }
+
+    .grid-container {
+      display: grid;
+      place-items: center;
+      height: 100vh;
+      padding: 10px;
+    }
+
+    .table-container {
+      width: 100%;
+      max-width: 800px;
+      background-color: white;
       padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 20px;
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: #333;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     th, td {
@@ -59,50 +72,60 @@
     a {
       display: block;
       text-align: center;
-      margin-top: 20px;
+      margin-top: 15px;
       text-decoration: none;
       color: #007bff;
       font-size: 1rem;
     }
 
-    footer {
-      background-color: #333;
-      color: #fff;
+    .error-message {
+      color: red;
       text-align: center;
-      padding: 10px;
-      position: relative;
-      bottom: 0;
-      width: 100%;
+      margin-top: 10px;
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 600px) {
+      th, td {
+        font-size: 0.9rem;
+        padding: 8px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Items Added</h1>
-    <table id="itemsTable">
-      <thead>
-        <tr>
-          <th>Serial No.</th>
-          <th>Barcode</th>
-          <th>Product Name</th>
-          <th>Quantity</th>
-          <th>Date Purchased</th>
-          <th>Best Before</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <a href="additem.html">Add More Items</a>
+  <div class="grid-container">
+    <div class="table-container">
+      <h1>Items Added</h1>
+      <table id="itemsTable">
+        <thead>
+          <tr>
+            <th>Serial No.</th>
+            <th>Barcode</th>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Date Purchased</th>
+            <th>Best Before</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Items will be dynamically rendered here -->
+        </tbody>
+      </table>
+
+      <a href="add-item.html">Add More Items</a>
+      <div class="error-message" id="errorMessage"></div>
+    </div>
   </div>
 
-  <footer>
-    Copyright © 2024, Joyce D.
-  </footer>
-
   <script>
-    // Retrieve items from localStorage or initialize with an empty array
+    // Retrieve items from localStorage
     function getItems() {
       return JSON.parse(localStorage.getItem('items')) || [];
     }
@@ -112,15 +135,14 @@
       localStorage.setItem('items', JSON.stringify(items));
     }
 
-    // Render the items in the table
+    // Render items in the table
     function renderItems() {
       const items = getItems();
       const tbody = document.querySelector('#itemsTable tbody');
-      tbody.innerHTML = ''; // Clear existing rows
+      tbody.innerHTML = ''; // Clear previous rows
 
       items.forEach((item, index) => {
         const row = document.createElement('tr');
-
         row.innerHTML = `
           <td>${item.serialNumber}</td>
           <td>${item.barcode}</td>
@@ -141,7 +163,24 @@
       });
     }
 
-    // Edit an existing item
+    // Confirm before deleting an item
+    function confirmDelete(index) {
+      const confirmDeletion = confirm('Are you sure you want to delete this item?');
+      if (confirmDeletion) {
+        deleteItem(index);
+      }
+    }
+
+    // Delete an item
+    function deleteItem(index) {
+      const items = getItems();
+      items.splice(index, 1); // Remove the item
+      saveItems(items);
+      alert('Item deleted!');
+      renderItems();
+    }
+
+    // Edit an item
     function editItem(index) {
       const items = getItems();
       const item = items[index];
@@ -163,25 +202,9 @@
       }
     }
 
-    // Confirm before deleting an item
-    function confirmDelete(index) {
-      const confirmDeletion = confirm('Are you sure you want to delete this item?');
-      if (confirmDeletion) {
-        deleteItem(index);
-      }
-    }
-
-    // Delete an item
-    function deleteItem(index) {
-      const items = getItems();
-      items.splice(index, 1); // Remove the item
-      saveItems(items);
-      alert('Item deleted!');
-      renderItems();
-    }
-
-    // Render items when the page loads
+    // Render items on page load
     document.addEventListener('DOMContentLoaded', renderItems);
   </script>
+
 </body>
 </html>
