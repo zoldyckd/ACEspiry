@@ -44,10 +44,11 @@
     .filters {
       display: flex;
       justify-content: center;
+      gap: 10px;
       margin-bottom: 20px;
     }
 
-    input {
+    input, select {
       padding: 10px;
       font-size: 1rem;
       border: 1px solid #ccc;
@@ -112,6 +113,11 @@
 
       <div class="filters">
         <input type="text" id="searchInput" placeholder="Search by product name">
+        <select id="expiryFilter">
+          <option value="all">All</option>
+          <option value="expired">Expired</option>
+          <option value="notExpired">Not Expired</option>
+        </select>
       </div>
 
       <table id="itemsTable">
@@ -151,6 +157,11 @@
       return diffDays >= 0 ? `${diffDays} days left` : 'Expired';
     }
 
+    function isExpired(bestBefore) {
+      const today = new Date();
+      return new Date(bestBefore) < today;
+    }
+
     function renderItems(filteredItems) {
       const tbody = document.querySelector('#itemsTable tbody');
       tbody.innerHTML = ''; // Clear previous rows
@@ -188,6 +199,7 @@
 
     function filterItems() {
       const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const expiryFilter = document.getElementById('expiryFilter').value;
       let items = getItems();
 
       if (searchInput) {
@@ -196,10 +208,17 @@
         );
       }
 
+      if (expiryFilter === 'expired') {
+        items = items.filter(item => isExpired(item.bestBefore));
+      } else if (expiryFilter === 'notExpired') {
+        items = items.filter(item => !isExpired(item.bestBefore));
+      }
+
       renderItems(items);
     }
 
     document.getElementById('searchInput').addEventListener('input', filterItems);
+    document.getElementById('expiryFilter').addEventListener('change', filterItems);
 
     function confirmDelete(index) {
       if (confirm('Are you sure you want to delete this item?')) {
