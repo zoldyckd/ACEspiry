@@ -5,30 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEspiry - Add Product</title>
   <style>
-    /* Global Styles */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f4f8;
+    /* Reset styles */
+    * {
       margin: 0;
       padding: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      box-sizing: border-box;
     }
 
-    .container {
+    html, body {
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f4f8;
+    }
+
+    .grid-container {
+      display: grid;
+      place-items: center;
+      height: 100vh;
+      padding: 10px;
+    }
+
+    .form-container {
       width: 100%;
       max-width: 400px;
-      padding: 40px;
-      background-color: #fff;
+      background-color: white;
+      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
       text-align: center;
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: #333;
       margin-bottom: 20px;
     }
@@ -36,21 +44,19 @@
     form {
       display: flex;
       flex-direction: column;
+      gap: 15px;
     }
 
     label {
-      margin-bottom: 5px;
-      color: #555;
       font-weight: bold;
-      font-size: 1rem;
+      color: #555;
     }
 
     input {
       padding: 12px;
-      margin-bottom: 20px;
+      font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 1rem;
       width: 100%;
     }
 
@@ -70,50 +76,85 @@
     }
 
     a {
-      display: block;
       text-align: center;
+      display: block;
       margin-top: 15px;
       text-decoration: none;
       color: #007bff;
       font-size: 1rem;
     }
+
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      button {
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Add Product</h1>
-    <form id="productForm">
-      <label for="barcode">Barcode Number</label>
-      <input type="text" id="barcode" required>
+  <div class="grid-container">
+    <div class="form-container">
+      <h1>Add Product</h1>
+      <form id="productForm">
+        <label for="barcode">Barcode Number</label>
+        <input type="text" id="barcode" required>
 
-      <label for="productName">Product Name</label>
-      <input type="text" id="productName" required>
+        <label for="productName">Product Name</label>
+        <input type="text" id="productName" required>
 
-      <label for="quantity">Quantity</label>
-      <input type="number" id="quantity" min="1" required>
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" min="1" required>
 
-      <label for="purchaseDate">Date Purchased</label>
-      <input type="date" id="purchaseDate" required>
+        <label for="purchaseDate">Date Purchased</label>
+        <input type="date" id="purchaseDate" required>
 
-      <label for="bestBefore">Best Before</label>
-      <input type="date" id="bestBefore" required>
+        <label for="bestBefore">Best Before</label>
+        <input type="date" id="bestBefore" required>
 
-      <button type="submit">Add Product</button>
-    </form>
+        <button type="submit">Add Product</button>
+      </form>
 
-    <a href="view-items.html">View Items</a>
+      <a href="viewitem.html">View Items</a>
+
+      <div class="error-message" id="errorMessage"></div>
+    </div>
   </div>
 
   <script>
+    // Handle form submission
     document.getElementById('productForm').addEventListener('submit', function (e) {
       e.preventDefault();
+
       const barcode = document.getElementById('barcode').value;
       const productName = document.getElementById('productName').value;
       const quantity = document.getElementById('quantity').value;
       const purchaseDate = document.getElementById('purchaseDate').value;
       const bestBefore = document.getElementById('bestBefore').value;
+      const errorMessage = document.getElementById('errorMessage');
 
+      // Validate that the 'Best Before' date is after the 'Date Purchased'
+      if (new Date(bestBefore) <= new Date(purchaseDate)) {
+        errorMessage.textContent = "Error: 'Best Before' date must be after 'Date Purchased'.";
+        return;
+      }
+
+      // If validation passes, save the item
+      errorMessage.textContent = ""; // Clear previous error message
       const items = JSON.parse(localStorage.getItem('items')) || [];
       const serialNumber = items.length + 1;
 
@@ -123,5 +164,6 @@
       e.target.reset();
     });
   </script>
+
 </body>
 </html>
