@@ -43,9 +43,8 @@
 
     .filters {
       display: flex;
-      gap: 10px;
+      justify-content: center;
       margin-bottom: 20px;
-      flex-wrap: wrap;
     }
 
     input {
@@ -54,7 +53,7 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       width: 100%;
-      max-width: 200px;
+      max-width: 400px;
     }
 
     table {
@@ -113,8 +112,6 @@
 
       <div class="filters">
         <input type="text" id="searchInput" placeholder="Search by product name">
-        <input type="date" id="filterPurchaseDate" placeholder="Filter by Date Purchased">
-        <input type="date" id="filterBestBefore" placeholder="Filter by Best Before">
       </div>
 
       <table id="itemsTable">
@@ -126,6 +123,8 @@
             <th>Quantity</th>
             <th>Date Purchased</th>
             <th>Best Before</th>
+            <th>Days till Expiry</th>
+            <th>Notes</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -134,7 +133,7 @@
         </tbody>
       </table>
 
-      <a href="add-item.html">Add More Items</a>
+      <a href="additem.html">Add More Items</a>
     </div>
   </div>
 
@@ -143,13 +142,22 @@
       return JSON.parse(localStorage.getItem('items')) || [];
     }
 
+    function daysTillExpiry(bestBefore) {
+      const today = new Date();
+      const expiryDate = new Date(bestBefore);
+      const diffTime = expiryDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      return diffDays >= 0 ? `${diffDays} days left` : 'Expired';
+    }
+
     function renderItems(filteredItems) {
       const tbody = document.querySelector('#itemsTable tbody');
       tbody.innerHTML = ''; // Clear previous rows
 
       if (filteredItems.length === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="7" style="text-align:center;">No items found</td>`;
+        row.innerHTML = `<td colspan="9" style="text-align:center;">No items found</td>`;
         tbody.appendChild(row);
         return;
       }
@@ -163,6 +171,8 @@
           <td>${item.quantity}</td>
           <td>${item.purchaseDate}</td>
           <td>${item.bestBefore}</td>
+          <td>${daysTillExpiry(item.bestBefore)}</td>
+          <td>${item.notes || 'No notes'}</td>
           <td>
             <button class="icon-button" onclick="editItem(${index})">
               <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
@@ -178,9 +188,6 @@
 
     function filterItems() {
       const searchInput = document.getElementById('searchInput').value.toLowerCase();
-      const filterPurchaseDate = document.getElementById('filterPurchaseDate').value;
-      const filterBestBefore = document.getElementById('filterBestBefore').value;
-
       let items = getItems();
 
       if (searchInput) {
@@ -189,20 +196,10 @@
         );
       }
 
-      if (filterPurchaseDate) {
-        items = items.filter(item => item.purchaseDate === filterPurchaseDate);
-      }
-
-      if (filterBestBefore) {
-        items = items.filter(item => item.bestBefore === filterBestBefore);
-      }
-
       renderItems(items);
     }
 
     document.getElementById('searchInput').addEventListener('input', filterItems);
-    document.getElementById('filterPurchaseDate').addEventListener('change', filterItems);
-    document.getElementById('filterBestBefore').addEventListener('change', filterItems);
 
     function confirmDelete(index) {
       if (confirm('Are you sure you want to delete this item?')) {
