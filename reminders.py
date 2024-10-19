@@ -3,8 +3,8 @@ import json
 from datetime import datetime, timedelta
 
 # Telegram bot token and chat ID
-BOT_TOKEN = '7738170005:AAFV6vnbcPFG4dP2rprfxdz115X5JIj4DC8'
-CHAT_ID = 'acespirybot'
+BOT_TOKEN = ''
+CHAT_ID = ''
 
 # Get items from localStorage (simulate for now)
 items = [
