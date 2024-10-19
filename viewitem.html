@@ -99,12 +99,12 @@
       <table id="itemsTable">
         <thead>
           <tr>
+            <th>Date Created</th>
             <th>Barcode</th>
             <th>Product Name</th>
             <th>Quantity</th>
             <th>Date Purchased</th>
             <th>Best Before</th>
-            <th>Date Created</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -137,12 +137,12 @@
       items.forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
+          <td>${item.dateCreated}</td>
           <td>${item.barcode}</td>
           <td>${item.productName}</td>
           <td>${item.quantity}</td>
           <td>${item.purchaseDate}</td>
           <td>${item.bestBefore}</td>
-          <td>${item.dateCreated}</td>
           <td>
             <button class="icon-button" onclick="editItem(${index})">
               <img src="https://img.icons8.com/ios-glyphs/30/edit--v1.png" alt="Edit">
