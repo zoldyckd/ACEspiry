@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEspiry - Home</title>
   <style>
+    /* Reset Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     /* Global Styles */
     body {
       font-family: Arial, sans-serif;
@@ -49,8 +56,11 @@
       text-decoration: none;
       color: #fff;
       background-color: #007bff;
-      border-radius: 5px;
+      border-radius: 8px;
       transition: background-color 0.3s;
+      width: 90%; /* Ensure buttons scale on smaller screens */
+      max-width: 300px; /* Limit button width on larger screens */
+      text-align: center;
     }
 
     .button:hover {
@@ -66,6 +76,23 @@
       position: relative;
       bottom: 0;
       width: 100%;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+      }
+
+      .button {
+        font-size: 1rem;
+        padding: 12px 20px;
+      }
     }
   </style>
 </head>
