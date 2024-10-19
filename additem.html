@@ -59,6 +59,12 @@
       border-radius: 8px;
     }
 
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+
     button {
       padding: 15px;
       font-size: 1.2rem;
@@ -72,6 +78,21 @@
 
     button:hover {
       background-color: #0056b3;
+    }
+
+    .link-container {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .link-container a {
+      text-decoration: none;
+      color: #007bff;
+      font-size: 1rem;
+    }
+
+    .link-container a:hover {
+      text-decoration: underline;
     }
 
     @media (max-width: 600px) {
@@ -120,8 +141,14 @@
         <label for="notes">Notes</label>
         <textarea id="notes" rows="3" placeholder="Optional notes..."></textarea>
 
+        <p class="error-message" id="errorMessage"></p>
+
         <button type="submit">Add Product</button>
       </form>
+
+      <div class="link-container">
+        <a href="viewitem.html">📋 View Items</a>
+      </div>
     </div>
   </div>
 
@@ -138,12 +165,21 @@
       const notes = document.getElementById('notes').value;
       const dateCreated = new Date().toISOString().split('T')[0]; // Auto-generate Date Created
 
+      const errorMessage = document.getElementById('errorMessage');
+
+      // Validate that Best Before date is after the Date Purchased
+      if (new Date(bestBefore) <= new Date(purchaseDate)) {
+        errorMessage.textContent = "'Best Before' date must be after 'Date Purchased'.";
+        return;
+      }
+
       const items = JSON.parse(localStorage.getItem('items')) || [];
       items.push({ productName, category, quantity, purchaseDate, bestBefore, tags, notes, dateCreated });
       localStorage.setItem('items', JSON.stringify(items));
 
       alert('Product added successfully!');
       e.target.reset(); // Clear form fields
+      errorMessage.textContent = ''; // Clear any previous error message
     });
   </script>
 
